@@ -1,0 +1,39 @@
+@(form: Form[ZipcodeSearch.Data], postUrl: Call)(implicit request: MessagesRequestHeader)
+
+  @main("Zipcode Search", form, postUrl) {
+
+    <h1>Zipcode Search</h1>
+
+    @* Flash shows updates to a page *@
+    @request.flash.data.map{ case (name, value) =>
+      <div>@name: @value</div>
+    }
+
+    <hr/>
+
+	@if(form.hasGlobalErrors) {
+		@form.globalErrors.map { error: FormError =>
+			<div>
+				@error.key: @error.message
+			</div>
+		}
+	}
+	<!--
+    @* Global errors are not tied to any particular form field *@
+    @if(form.hasGlobalErrors) {
+      @form.globalErrors.map { error: FormError =>
+        <div>
+          @error.key: @error.message
+        </div>
+      }
+    }
+
+    @helper.form(postUrl) {
+      @helper.CSRF.formField
+
+      @helper.inputText(form("zipcode"))
+
+      <button>Search</button>
+    }
+	-->
+  }

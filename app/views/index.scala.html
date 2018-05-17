@@ -1,9 +1,9 @@
-@()
+@(form: Form[ZipcodeSearch.Data], postUrl: Call)(implicit request: MessagesRequestHeader)
 
-  @main("Welcome to Play") {
+  @main("Welcome to Play", form, postUrl) {
     <div>
       <ul>
-        <li>Please go to <a href="@routes.WidgetController.listWidgets">@routes.WidgetController.listWidgets</a></li>
+        <li>Please go to <a href="@routes.SearchController.listSearch">@routes.SearchController.listSearch</a></li>
       </ul>
     </div>
   }

@@ -1,4 +1,6 @@
-@()
+@(form: Form[ZipcodeSearch.Data], postUrl: Call)(implicit request: MessagesRequestHeader)
+
+@implicitfield = @{ helper.FieldConstructor(navSearchField.f) } 
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
 	<a class="navbar-brand" href="#">Rent Control</a>
@@ -17,10 +19,19 @@
 				<a class="nav-link" href="#">About</a>
 			</li>
 		</ul>
+		<!-- 
 		<form class="form-inline my-2 my-lg-0">
 			<input class="form-control mr-sm-2" placeholder="Search" type="text">
 			<button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
 		</form>
+		-->
+		@helper.form(postUrl, 'class -> "form-inline my-2 my-lg-0") {
+			@helper.CSRF.formField
+			@helper.input(form("zipcode")) { (id, name, value, args) =>
+				<input id="@id" class="form-control mr-sm-2" placeholder="Search" type="text" @toHtmlArgs(args)>
+			}
+			<button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+		}
 	</div>
 </nav>
 
