@@ -1,7 +1,8 @@
-@(form: Form[ZipcodeSearch.Data], postUrl: Call)(implicit request: MessagesRequestHeader)
+@(form: Form[Zipcode], postUrl: Call, listings: List[String] = Nil)(implicit request: MessagesRequestHeader)
 
   @main("Zipcode Search", form, postUrl) {
 
+  	<h1>listings @listings.mkString(", ")</h1>
 	@map()
 
 	<!-- 
@@ -12,12 +13,5 @@
 
 	 <hr/>
 
-	@if(form.hasGlobalErrors) {
-		@form.globalErrors.map { error: FormError =>
-			<div>
-				@error.key: @error.message
-			</div>
-		}
-	}
 	 -->
   }

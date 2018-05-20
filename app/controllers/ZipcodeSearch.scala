@@ -1,8 +1,17 @@
 package controllers
 
+import play.api.Logger
+
+
 object ZipcodeSearch {
+	case class Data(zipcode: String)
+	/*
 	import play.api.data.Forms._
 	import play.api.data.Form
+	*/
+	import play.api.data._
+	import play.api.data.Forms._
+	import play.api.data.validation.Constraints._
 
 	/**
 	* A form processing DTO that maps to the form below.
@@ -10,13 +19,19 @@ object ZipcodeSearch {
 	* Using a class specifically for form binding reduces the chances
 	* of a parameter tampering attack and makes code clearer.
 	*/
-	case class Data(zipcode: String)
 
 	def validate(zipcode: String): Option[Data] = {
+		Logger debug "validating..."
 		val pattern = "\\d{5}".r
 		zipcode match {
-			case pattern(_*) => Some(Data(zipcode))
-			case _ => None
+			case pattern(_*) => {
+				Logger debug "matched!"
+				Some(Data(zipcode))
+			}
+			case _ => {
+				Logger debug "no match"
+				None
+			}
 		}
 	}
 
@@ -31,7 +46,10 @@ object ZipcodeSearch {
 		)(Data.apply)(Data.unapply) verifying(
 			"Invalid", 
 			fields => fields match {
-				case data => validate(data.zipcode).isDefined
+				case data => {
+					Logger debug "about to validate..."
+					validate(data.zipcode).isDefined
+				}
 			}
 		)
 	)

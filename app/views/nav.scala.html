@@ -1,4 +1,6 @@
-@(form: Form[ZipcodeSearch.Data], postUrl: Call)(implicit request: MessagesRequestHeader)
+@(formy: Form[Zipcode], postUrl: Call)(implicit request: MessagesRequestHeader)
+
+@import helper._
 
 @implicitfield = @{ helper.FieldConstructor(navSearchField.f) } 
 
@@ -27,10 +29,17 @@
 		-->
 		@helper.form(postUrl, 'class -> "form-inline my-2 my-lg-0") {
 			@helper.CSRF.formField
-			@helper.input(form("zipcode")) { (id, name, value, args) =>
-				<input id="@id" class="form-control mr-sm-2" placeholder="Search" type="text" @toHtmlArgs(args)>
+			@helper.input(formy("zipcode")) { (id, name, value, args) =>
+				<input type="text" name="@name" id="@id" class="form-control mr-sm-2" placeholder="Search" @toHtmlArgs(args)>
 			}
 			<button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+		}
+		@if(formy.hasGlobalErrors) {
+			@formy.globalErrors.map { error: FormError =>
+				<div>
+					@error.key: @error.message
+				</div>
+			}
 		}
 	</div>
 </nav>
