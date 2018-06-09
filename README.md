@@ -1,8 +1,7 @@
 # rent control apt finder
 
-[![Build Status](https://travis-ci.org/playframework/play-scala-forms-example.svg?branch=2.6.x)](https://travis-ci.org/playframework/play-scala-forms-example)
+[![Build Status](https://travis-ci.org/benjaminedwardwebb/rent-control.svg?branch=feature/play-base)](https://travis-ci.org/benjaminedwardwebb/rent-control)
 
-This example shows form processing and form helper handling under Play 2.6.x.
 
 ## How to run
 
