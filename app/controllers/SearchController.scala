@@ -28,11 +28,6 @@ case class Zipcode(zipcode: String)
  * for details.
  */
 class SearchController @Inject()(cc: MessagesControllerComponents) extends MessagesAbstractController(cc) {
-	//import ZipcodeSearch._
-
-	//val form = ZipcodeSearch.form
-	//Logger debug form.toString
-
 	def validate(zipcode: String): Option[Zipcode] = {
 		Logger debug "validating..."
 		val pattern = "\\d{5}".r
@@ -57,22 +52,6 @@ class SearchController @Inject()(cc: MessagesControllerComponents) extends Messa
 			}
 		)
 	)
-
-	/*
-	val form = Form(
-		mapping(
-			"zipcode" -> text
-		)(Data.apply)(Data.unapply) verifying(
-			"Invalid", 
-			fields => fields match {
-				case data => {
-					Logger debug "about to validate..."
-					validate(data.zipcode).isDefined
-				}
-			}
-		)
-	)
-	*/
 
   // db connection
   val xa = Transactor.fromDriverManager[IO](
