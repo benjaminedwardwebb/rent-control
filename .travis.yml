@@ -9,6 +9,7 @@ services:
 before_script:
     - psql -U postgres -f sql/rentcontrol-ddl.sql
     - psql -U postgres -f sql/rentcontrol-insert-sample.sql
+script: sbt ++$TRAVIS_SCALA_VERSION test
 notifications:
     email:
         recipients:
