@@ -1,0 +1,15 @@
+language: scala
+scala:
+    - 2.12.4
+jdk:
+    - oraclejdk8
+    - openjdk8
+services:
+    - postgresql
+before_script:
+    - psql -U postgres -f sql/rentcontrol-ddl.sql
+    - psql -U postgres -f sql/rentcontrol-insert-sample.sql
+notifications:
+    email:
+        recipients:
+            - benjaminedwardwebb@gmail.com
