@@ -1,4 +1,4 @@
-@(title: String, form: Form[Zipcode], postUrl: Call)(content: Html)(implicit request: MessagesRequestHeader)
+@(title: String, searchForm: Form[Entry], postUrl: Call)(content: Html)(implicit request: MessagesRequestHeader)
 
 <!DOCTYPE html>
 
@@ -19,7 +19,7 @@
 		</style>
     </head>
     <body>
-		@nav(form, postUrl)
+		@nav(searchForm, postUrl)
         @content
 		@bodyscripts()
     </body>

@@ -17,21 +17,20 @@ class BrowserSpec extends PlaySpec with GuiceOneServerPerSuite with OneBrowserPe
 
   "The browser should" must {
     "successfully process a form" in {
-      val listWidgetsURL = controllers.routes.WidgetController.listWidgets().absoluteURL(false, s"localhost:$port")
+      val mapURL = controllers.routes.SearchController.map().absoluteURL(false, s"localhost:$port")
 
-      go to listWidgetsURL
+      go to mapURL
 
       // Enter in the form fields...
-      textField("name").value = "Foo"
-      textField("price").value = "100"
+      textField("zipcode").value = "11206"
 
       // Press enter button...
       submit()
 
       // Wait for server to process...
       eventually {
-        // Check to see that the value made into Flash message!
-        pageSource contains "Foo"
+        // Check to see that a marker is added in the Leaflet javascript
+        pageSource contains "L.marker"
       }
     }
   }

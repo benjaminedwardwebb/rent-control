@@ -1,11 +1,15 @@
-@()
+@(listings: List[Listing])
 
 <div id="mapid"></div>
 <script>
-var mymap = L.map('mapid').setView([40.725, -73.97], 13);
+var map = L.map('mapid').setView([40.725, -73.97], 13);
 
 L.tileLayer( 
 	'http://c.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg', {
 	attribution: 'Map tiles by <a target="_top" href="http://stamen.com">Stamen Design</a>, under <a target="_top" href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a target="_top" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.'
-}).addTo(mymap);
+}).addTo(map);
+
+@for(listing <- listings) {
+	L.marker([@listing.latitude, @listing.longitude]).addTo(map)
+}
 </script>

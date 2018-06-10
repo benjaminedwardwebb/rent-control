@@ -1,8 +1,8 @@
-@(formy: Form[Zipcode], postUrl: Call)(implicit request: MessagesRequestHeader)
+@(searchForm: Form[Entry], postUrl: Call)(implicit request: MessagesRequestHeader)
 
 @import helper._
 
-@implicitfield = @{ helper.FieldConstructor(navSearchField.f) } 
+@implicitfield = @{ helper.FieldConstructor(navSearchField.f) }
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
 	<a class="navbar-brand" href="#">Rent Control</a>
@@ -12,30 +12,27 @@
 	<div class="collapse navbar-collapse" id="navbarColor01">
 		<ul class="navbar-nav mr-auto">
 			<li class="nav-item active">
-				<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+				<a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="#">Map</a>
+				<a class="nav-link" href="/map">Map</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="#">About</a>
+				<a class="nav-link" href="/listings">Listings</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="/about">About</a>
 			</li>
 		</ul>
-		<!-- 
-		<form class="form-inline my-2 my-lg-0">
-			<input class="form-control mr-sm-2" placeholder="Search" type="text">
-			<button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-		</form>
-		-->
 		@helper.form(postUrl, 'class -> "form-inline my-2 my-lg-0") {
 			@helper.CSRF.formField
-			@helper.input(formy("zipcode")) { (id, name, value, args) =>
+			@helper.input(searchForm("zipcode")) { (id, name, value, args) =>
 				<input type="text" name="@name" id="@id" class="form-control mr-sm-2" placeholder="Search" @toHtmlArgs(args)>
 			}
 			<button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
 		}
-		@if(formy.hasGlobalErrors) {
-			@formy.globalErrors.map { error: FormError =>
+		@if(searchForm.hasGlobalErrors) {
+			@searchForm.globalErrors.map { error: FormError =>
 				<div>
 					@error.key: @error.message
 				</div>
@@ -43,4 +40,3 @@
 		}
 	</div>
 </nav>
-

@@ -8,7 +8,6 @@ import cats._
 import cats.effect._
 import cats.implicits._
 
-//import models.Widget
 import play.api.Logger
 import play.api.data._
 import play.api.data.Forms._
@@ -16,104 +15,77 @@ import play.api.data.validation.Constraints._
 import play.api.i18n._
 import play.api.mvc._
 
-case class Zipcode(zipcode: String)
+import models.search._
 /**
- * The classic WidgetController using MessagesAbstractController.
- *
- * Instead of MessagesAbstractController, you can use the I18nSupport trait,
- * which provides implicits that create a Messages instance from a request
- * using implicit conversion.
- *
- * See https://www.playframework.com/documentation/2.6.x/ScalaForms#passing-messagesprovider-to-form-helpers
- * for details.
- */
+* The classic WidgetController using MessagesAbstractController.
+*
+* Instead of MessagesAbstractController, you can use the I18nSupport trait,
+* which provides implicits that create a Messages instance from a request
+* using implicit conversion.
+*
+* See https://www.playframework.com/documentation/2.6.x/ScalaForms#passing-messagesprovider-to-form-helpers
+* for details.
+*/
 class SearchController @Inject()(cc: MessagesControllerComponents) extends MessagesAbstractController(cc) {
-	def validate(zipcode: String): Option[Zipcode] = {
-		Logger debug "validating..."
-		val pattern = "\\d{5}".r
-		zipcode match {
-			case pattern(_*) => {
-				Logger debug "matched!"
-				Some(Zipcode(zipcode))
-			}
-			case _ => {
-				Logger debug "no match"
-				None
-			}
-		}
-	}
-	val form = Form(
+	// db connection
+	val xa = Transactor.fromDriverManager[IO](
+		"org.postgresql.Driver",
+		"jdbc:postgresql:rentcontrol",
+		"rentcontrol",
+		"rentcontrol"
+	)
+
+	val searchForm = Form(
 		mapping(
 			"zipcode" -> text
-		)(Zipcode.apply)(Zipcode.unapply) verifying(
-			"Invalid",
+		)(Entry.apply)(Entry.unapply) verifying(
+			"Invalid input",
 			fields => fields match {
-				case data => validate(data.zipcode).isDefined
+				case entry => entry.validate(Entry(entry.zipcode)).isDefined
 			}
 		)
 	)
 
-  // db connection
-  val xa = Transactor.fromDriverManager[IO](
-	  "org.postgresql.Driver",
-	  "jdbc:postgresql:rentcontrol",
-	  "rentcontrol",
-	  "rentcontrol"
-  )
+	private val postUrl = routes.SearchController.search()
 
-  // The URL to the widget.  You can call this directly from the template, but it
-  // can be more convenient to leave the template completely stateless i.e. all
-  // of the "WidgetController" references are inside the .scala file.
-  private val postUrl = routes.SearchController.search()
+	// This will be the action that handles our form post
+	def search = Action { implicit request: MessagesRequest[AnyContent] =>
+		Logger debug "searching ..."
 
-  def index = Action { implicit request: MessagesRequest[AnyContent] =>
-    Ok(views.html.index(form, postUrl))
-  }
+		val invalid = { formWithErrors: Form[Entry] =>
+			Logger debug "invalid input, highlighting errors ..."
+			BadRequest(views.html.Map(formWithErrors, postUrl))
+		}
 
-  def listSearch = Action { implicit request: MessagesRequest[AnyContent] =>
-    // Pass an unpopulated form to the template
-    Ok(views.html.zipcode(form, postUrl))
-  }
+		val valid = { entry: Entry =>
+			Logger debug "valid input, searching ..."
 
-  // This will be the action that handles our form post
-  def search = Action { implicit request: MessagesRequest[AnyContent] =>
-	Logger.debug("search")
+			val result: List[Listing] = Search(entry)
+				.sql
+				.to[List]
+				.transact(xa)
+				.unsafeRunSync
 
-    val errorFunction = { formWithErrors: Form[Zipcode] =>
-		Logger debug "error"
-      // This is the bad case, where the form had validation errors.
-      // Let's show the user the form again, with the errors highlighted.
-      // Note how we pass the form with errors to the template.
-      BadRequest(views.html.zipcode(formWithErrors, postUrl))
-    }
+			Logger debug result.mkString(", ")
+			Ok(views.html.Map(searchForm, postUrl, result))
+			//Redirect(routes.SearchController.listSearch(form, postUrl, address))
+		}
 
-    val successFunction = { zipcode: Zipcode =>
-		// This is the good case, where the form was successfully parsed as a Data object.
-		Logger debug "success"
+		searchForm.bindFromRequest.fold(
+			invalid, 
+			valid
+		)
+	}
 
-		// query postgres for listings w/ zipcode
-		def whereZipcode(zipcode: String) = sql"""
-			select address 
-			from rentcontrol.listing 
-			where zipcode = $zipcode
-		""".query[String]
-		
-		val address = whereZipcode(zipcode.zipcode).to[List].transact(xa).unsafeRunSync
-		//val address = List(zipcode.zipcode)
-		Logger.debug(address.mkString(", "))
-	  	Ok(views.html.zipcode(form, postUrl, address))
-		//Redirect(routes.SearchController.listSearch(form, postUrl, address))
-		/*
-		val widget = Widget(name = data.name, price = data.price)
-		widgets.append(widget)
+	def map = Action { implicit request: MessagesRequest[AnyContent] =>
+		Ok(views.html.Map(searchForm, postUrl))
+	}
 
-		*/
-    }
+	def about = Action { implicit request: MessagesRequest[AnyContent] =>
+		Ok(views.html.About(searchForm, postUrl))
+	}
 
-    val formValidationResult = form.bindFromRequest
-	formValidationResult.fold(
-		errorFunction, 
-		successFunction
-	)
-  }
+	def index = Action { implicit request: MessagesRequest[AnyContent] =>
+		Ok(views.html.index(searchForm, postUrl))
+	}
 }

@@ -12,6 +12,8 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 lazy val doobieVersion = "0.5.3"
 
+TwirlKeys.templateImports += "models.search._"
+
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 

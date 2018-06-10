@@ -1,0 +1,5 @@
+@(searchForm: Form[Entry], postUrl: Call, listings: List[Listing] = Nil)(implicit request: MessagesRequestHeader)
+
+  @main("Map", searchForm, postUrl) {
+	@map(listings)
+  }

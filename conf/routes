@@ -2,19 +2,15 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
+# Home
 GET     /                           controllers.SearchController.index
-
-# Widgets
-#GET     /widgets                    controllers.WidgetController.listWidgets
-#POST    /widgets                    controllers.WidgetController.createWidget
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
-# Search
-GET		/zipcode					controllers.SearchController.listSearch
-POST	/zipcode					controllers.SearchController.search
-
 # Map
-GET		/map						controllers.MapController.display
+GET		/map						controllers.SearchController.map
+POST	/map						controllers.SearchController.search
+
+# About
+GET		/about						controllers.SearchController.about

@@ -20,6 +20,8 @@ create table rentcontrol.listing (
 ,	neighborhood varchar(255)
 ,	state varchar(2)
 ,	zipcode varchar(5) not null
+,	latitude numeric(9, 6)
+,	longitude numeric(9, 6)
 ,	modified_by varchar(255)
 ,	modified_ts timestamp
 )
